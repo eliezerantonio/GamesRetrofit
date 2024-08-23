@@ -32,12 +32,18 @@ import com.example.gamesretrofit.viewModel.GamesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailView(viewModel: GamesViewModel, navController: NavController, id: Int) {
+fun DetailView(viewModel: GamesViewModel, navController: NavController, id: Int, name: String?) {
     LaunchedEffect(Unit) {
-        viewModel.getGameById(id)
+
+        if (id == 0) {
+            name?.let { viewModel.gameByName(it.replace("", "-")) }
+        } else {
+            viewModel.getGameById(id)
+        }
+
     }
 
-    DisposableEffect(Unit){
+    DisposableEffect(Unit) {
         onDispose {
             viewModel.clean()
         }
@@ -46,7 +52,8 @@ fun DetailView(viewModel: GamesViewModel, navController: NavController, id: Int)
     Scaffold(
         topBar = {
             MainTopBar(title = viewModel.state.name, showBackButton = true, onClickBackButton = {
-                navController.popBackStack() }) {}
+                navController.popBackStack()
+            }) {}
         }
     ) {
         ContentDetailView(it, viewModel)
@@ -75,13 +82,14 @@ fun ContentDetailView(pad: PaddingValues, viewModel: GamesViewModel) {
         }
 
         val scroll = rememberScrollState(0)
-        Text(text = state.description_raw,
-        color = Color.White,
+        Text(
+            text = state.description_raw,
+            color = Color.White,
             textAlign = TextAlign.Justify,
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp, bottom = 10.dp)
                 .verticalScroll(scroll)
-            )
+        )
 
     }
 }
